@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	qyWechatBotWebhookUrl = "https://api.weixin.qq.com/cgi-bin/webhook/send?key=%s"
+	qyWechatBotWebhookUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=%s"
 )
 
 // QyWechatBotSender 企业微信机器人配置

@@ -58,6 +58,7 @@ type Config struct {
 	QyWechatBotSender message.QyWechatBotSender `yaml:"qyWechatBot"`    // 企业微信机器人配置
 	PushPlusSender    message.PushPlusSender    `yaml:"pushPlus"`       // PushPlus配置
 	ServerChanSender  message.ServerChanSender  `yaml:"serverChan"`     // Server酱配置
+	BarkSender        message.BarkSender        `yaml:"bark"`           // bark配置
 }
 
 // CustomSkuInfo 自定义商品信息

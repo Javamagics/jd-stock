@@ -47,7 +47,7 @@ delay: 5500 # 每次查询延迟（毫秒），建议设置大些，防止触发
 ua: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0
 enableNotify: false # 启用通知
 notifyInterval: 720 # 通知间隔（分钟），防止频繁发送相同通知，0表示允许重复提醒
-notifyType: "dingtalk_bot" # 通知方式（dingtalk_bot、qy_wechat_bot、push_plus、server_chan）
+notifyType: "dingtalk_bot" # 通知方式（dingtalk_bot、qy_wechat_bot、push_plus、server_chan、bark）
 dingtalkBot: # 钉钉机器人
   token:
   secret:
@@ -57,6 +57,9 @@ pushPlus: # PushPlus
   token:
 serverChan: # Server酱
   sendKey:
+bark: # bark
+  baseUrl:
+  deviceKey:
 ```
 
 库存地区编码`addressCodes`参数从[京东地区编码](https://cll.name/jd/jdloc.html)查询获得

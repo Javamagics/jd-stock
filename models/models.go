@@ -47,6 +47,7 @@ type SkuInfo struct {
 type Config struct {
 	EveryMinutes      int                       `yaml:"everyMinutes"`   // 每隔N分钟执行
 	Provinces         []string                  `yaml:"provinces"`      // 库存省份
+	AddressCodes      []string                  `yaml:"addressCodes"`   // 库存地区编码
 	SkuInfos          []CustomSkuInfo           `yaml:"skuInfos"`       // 商品信息列表
 	Delay             int                       `yaml:"delay"`          // 查询延迟（毫秒）
 	Ua                string                    `yaml:"ua"`             // 用户代理字符串

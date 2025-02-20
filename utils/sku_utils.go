@@ -24,7 +24,11 @@ func QueryStock(customSkuInfos []models.CustomSkuInfo) {
 	config := GetConfig()
 
 	provinceNames := config.Provinces
+	addressCodes := config.AddressCodes
 	areaCodeCombinations := GetRandomCodeCombination(provinceNames)
+	if addressCodes != nil {
+		areaCodeCombinations = append(addressCodes, areaCodeCombinations...)
+	}
 	stockAreaNames := make(map[string][]string)
 
 	client := &http.Client{Timeout: 10 * time.Second}
@@ -60,16 +64,24 @@ func QueryStock(customSkuInfos []models.CustomSkuInfo) {
 			response = string(body)
 		}
 		groups := skuJsonPattern.FindStringSubmatch(response)
-		area, err := GetAreaByID(strings.Split(areaCodeCombination, "_")[0])
-		if err != nil {
-			log.Printf("%v", err)
-			return
+		areaName := ""
+		if contains(areaCodeCombination, addressCodes) {
+			// 自定义地区获取完整地址
+			areaName = GetAreaNameByCodeCombination(areaCodeCombination)
+		} else {
+			// 获取省份
+			area, err := GetAreaByID(strings.Split(areaCodeCombination, "_")[0])
+			if err != nil {
+				log.Printf("%v", err)
+				return
+			}
+			areaName = area.Name
 		}
 
 		if len(groups) > 1 {
 			var skuInfoMap map[string]models.SkuInfo
 			if err := json.Unmarshal([]byte(groups[1]), &skuInfoMap); err != nil {
-				log.Printf("%s：查询异常，response=%s", area.Name, response)
+				log.Printf("%s：查询异常，response=%s", areaName, response)
 				continue
 			}
 
@@ -85,14 +97,14 @@ func QueryStock(customSkuInfos []models.CustomSkuInfo) {
 				if !isPurchase {
 					purchaseStr = "不可购买"
 				}
-				log.Printf("[%s] %s %s：%s %s", skuId, customSkuInfo.Name, area.Name, stockStateName, purchaseStr)
+				log.Printf("[%s] %s %s：%s %s", skuId, customSkuInfo.Name, areaName, stockStateName, purchaseStr)
 
 				if stockStateName == "现货" && isPurchase {
-					stockAreaNames[skuId] = append(stockAreaNames[skuId], area.Name)
+					stockAreaNames[skuId] = append(stockAreaNames[skuId], areaName)
 				}
 			}
 		} else {
-			log.Printf("%s：查询异常，response=%s", area.Name, response)
+			log.Printf("%s：查询异常，response=%s", areaName, response)
 		}
 
 		if index != len(areaCodeCombinations)-1 {

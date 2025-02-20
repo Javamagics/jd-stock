@@ -28,6 +28,7 @@ func main() {
 	log.Println("=============配置信息=============")
 	log.Printf("|| 间隔执行：%d分钟\n", utils.GetEveryMinutes())
 	log.Printf("|| 库存省份：%v\n", cfg.Provinces)
+	log.Printf("|| 库存地区编码：%v\n", cfg.AddressCodes)
 	log.Printf("|| 监控商品：%v\n", cfg.SkuInfos)
 	log.Printf("|| 查询延迟：%d毫秒\n", utils.GetDelay())
 	log.Printf("|| 启用通知：%v\n", cfg.EnableNotify)

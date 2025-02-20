@@ -37,6 +37,9 @@ provinces: # 库存省份，省份有货后通知
   - 江苏
   - 浙江
   - 上海
+addressCodes: # 库存地区编码，在 https://cll.name/jd/jdloc.html 中查询完整的地区编码
+  - 2_2830_0_0
+  - 15_1213_3411_0
 skuInfos: # 监控商品信息
   - id: 100014150579
     name: 蓝漂XPLUS会员联名款 抽纸4层100抽*20包
@@ -55,6 +58,12 @@ pushPlus: # PushPlus
 serverChan: # Server酱
   sendKey:
 ```
+
+库存地区编码`addressCodes`参数从[京东地区编码](https://cll.name/jd/jdloc.html)查询获得
+
+库存省份`provinces`与库存地区编码`addressCodes`参数两者选其一
+
+
 
 #### docker（二选一）
 

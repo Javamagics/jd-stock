@@ -260,3 +260,21 @@ func GetChildAreasByID(id string) []models.AreaInfo {
 	}
 	return children
 }
+
+// GetAreaNameByCodeCombination 根据组合地区编码获取地区名称
+func GetAreaNameByCodeCombination(areaCodeCombination string) string {
+	codes := strings.Split(areaCodeCombination, "_")
+	var names []string
+	for _, code := range codes {
+		if code != "0" {
+			area, err := GetAreaByID(code)
+			if err != nil {
+				log.Printf("%v", err)
+			} else {
+				areaName := area.Name
+				names = append(names, areaName)
+			}
+		}
+	}
+	return strings.Join(names, "")
+}

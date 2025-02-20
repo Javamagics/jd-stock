@@ -80,9 +80,14 @@ func QueryStock(customSkuInfos []models.CustomSkuInfo) {
 					continue
 				}
 				stockStateName := skuInfo.StockStateName
-				log.Printf("[%s] %s %s：%s", skuId, customSkuInfo.Name, area.Name, stockStateName)
+				isPurchase := skuInfo.IsPurchase
+				purchaseStr := "可购买"
+				if !isPurchase {
+					purchaseStr = "不可购买"
+				}
+				log.Printf("[%s] %s %s：%s %s", skuId, customSkuInfo.Name, area.Name, stockStateName, purchaseStr)
 
-				if stockStateName == "现货" {
+				if stockStateName == "现货" && isPurchase {
 					stockAreaNames[skuId] = append(stockAreaNames[skuId], area.Name)
 				}
 			}
@@ -111,7 +116,7 @@ func QueryStock(customSkuInfos []models.CustomSkuInfo) {
 		log.Printf("%s", message)
 		SendMessage(message)
 	} else {
-		log.Printf("商品 %v 无货...", customSkuInfos)
+		log.Printf("商品 %v 无货或已下架...", customSkuInfos)
 	}
 }
 

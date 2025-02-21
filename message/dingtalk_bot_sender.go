@@ -8,8 +8,8 @@ import (
 
 // DingtalkBotSender 钉钉机器人配置
 type DingtalkBotSender struct {
-	Token  string `yaml:"token"`
-	Secret string `yaml:"secret"`
+	Token  string `yaml:"token" json:"token"`
+	Secret string `yaml:"secret" json:"secret"`
 }
 
 func (_ DingtalkBotSender) GetName() string {

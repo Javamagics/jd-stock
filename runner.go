@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/zhuweitung/jd-stock/message"
+	"github.com/zhuweitung/jd-stock/models"
 	"github.com/zhuweitung/jd-stock/utils"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/go-co-op/gocron"
@@ -13,6 +17,60 @@ import (
 func task() {
 	config := utils.GetConfig()
 	utils.QueryStock(config.SkuInfos)
+}
+
+// 获取配置
+func getConfig(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "只支持GET请求", http.StatusMethodNotAllowed)
+		return
+	}
+
+	config := utils.GetConfig()
+
+	// 将配置转换为JSON
+	jsonData, err := json.Marshal(config)
+	if err != nil {
+		http.Error(w, "JSON转换失败", http.StatusInternalServerError)
+		return
+	}
+
+	// 设置响应头
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonData)
+}
+
+// 保存配置
+func saveConfig(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "只支持POST请求", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// 读取请求体
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "读取请求失败", http.StatusBadRequest)
+		return
+	}
+
+	// 解析JSON到Config结构体
+	var config models.Config
+	if err := json.Unmarshal(body, &config); err != nil {
+		http.Error(w, "JSON解析失败", http.StatusBadRequest)
+		return
+	}
+
+	// 保存到文件
+	err = utils.SaveConfig(&config)
+	if err != nil {
+		http.Error(w, "配置写入文件失败", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("配置保存成功"))
 }
 
 func main() {
@@ -52,6 +110,22 @@ func main() {
 		log.Printf("加载地区编码失败: %v", err)
 		return
 	}
+
+	// 设置静态文件服务
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/", fs)
+
+	// 注册配置保存接口
+	http.HandleFunc("/api/get-config", getConfig)
+	http.HandleFunc("/api/save-config", saveConfig)
+
+	// 启动HTTP服务器
+	go func() {
+		log.Printf("HTTP服务器启动在 :8080 端口")
+		if err := http.ListenAndServe(":8080", nil); err != nil {
+			log.Fatal("HTTP服务器启动失败:", err)
+		}
+	}()
 
 	// 初始化 gocron 调度器
 	scheduler := gocron.NewScheduler(time.Local)

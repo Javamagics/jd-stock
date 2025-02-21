@@ -4,8 +4,8 @@ import "fmt"
 
 // BarkSender Bark配置
 type BarkSender struct {
-	ApiUrl    string `yaml:"baseUrl"`   // API地址
-	DeviceKey string `yaml:"deviceKey"` // 设备Key
+	ApiUrl    string `yaml:"apiUrl" json:"apiUrl"`       // API地址
+	DeviceKey string `yaml:"deviceKey" json:"deviceKey"` // 设备Key
 }
 
 func (_ BarkSender) GetName() string {

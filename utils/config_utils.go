@@ -44,6 +44,35 @@ func LoadConfig(path string) (*models.Config, error) {
 	return configInstance, err
 }
 
+// SaveConfig 将配置保存到 YAML 文件
+func SaveConfig(cfg *models.Config) error {
+	// 确保配置目录存在
+	if err := os.MkdirAll("config", 0755); err != nil {
+		return fmt.Errorf("创建配置目录失败: %w", err)
+	}
+
+	// 创建或打开文件
+	file, err := os.Create("config/config.yaml")
+	if err != nil {
+		return fmt.Errorf("创建配置文件失败: %w", err)
+	}
+	defer file.Close()
+
+	// 创建 YAML 编码器
+	encoder := yaml.NewEncoder(file)
+	defer encoder.Close()
+
+	// 将配置写入文件
+	if err := encoder.Encode(cfg); err != nil {
+		return fmt.Errorf("写入配置文件失败: %w", err)
+	}
+
+	// 更新全局配置实例
+	configInstance = cfg
+
+	return nil
+}
+
 // GetConfig 返回全局配置实例
 func GetConfig() *models.Config {
 	return configInstance

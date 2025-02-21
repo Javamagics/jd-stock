@@ -6,7 +6,7 @@ import (
 
 // PushPlusSender PushPlus配置
 type PushPlusSender struct {
-	Token string `yaml:"token"`
+	Token string `yaml:"token" json:"token"`
 }
 
 func (_ PushPlusSender) GetName() string {

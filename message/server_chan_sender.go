@@ -6,7 +6,7 @@ import (
 
 // ServerChanSender Server酱配置
 type ServerChanSender struct {
-	SendKey string `yaml:"sendKey"`
+	SendKey string `yaml:"sendKey" json:"sendKey"`
 }
 
 func (_ ServerChanSender) GetName() string {

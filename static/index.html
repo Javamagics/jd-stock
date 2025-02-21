@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>配置编辑器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <style>
+        .notify-config {
+            margin-top: 15px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">配置编辑器</h2>
+        </div>
+        <div class="card-body">
+            <form id="configForm">
+                <div class="mb-3">
+                    <label class="form-label">执行间隔(分钟)</label>
+                    <input type="number" class="form-control" name="everyMinutes" required>
+                    <div class="form-text">每隔N分钟执行一次查询</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">监控省份</label>
+                    <input type="text" class="form-control" name="provinces" placeholder="使用逗号分隔">
+                    <div class="form-text">省份有货后通知，多个省份用逗号分隔，例如：江苏,浙江,上海（与地区编码二选一）</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">地区编码</label>
+                    <input type="text" class="form-control" name="addressCodes" placeholder="使用逗号分隔">
+                    <div class="form-text">在 <a href="https://cll.name/jd/jdloc.html" target="_blank">京东地区编码</a> 中查询完整的地区编码，多个地区编码用逗号分隔（与监控省份二选一）</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">商品信息</label>
+                    <div id="skuList">
+                        <div class="sku-item mb-2 row">
+                            <div class="col">
+                                <input type="text" class="form-control" name="skuId" placeholder="商品ID">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" name="skuName" placeholder="商品名称">
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-primary" onclick="addSku()">添加</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-text">添加需要监控的商品ID和名称</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">查询延迟(毫秒)</label>
+                    <input type="number" class="form-control" name="delay" required>
+                    <div class="form-text">每次查询延迟时间，建议设置大于5000毫秒，防止触发风控</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">User Agent</label>
+                    <input type="text" class="form-control" name="ua" required>
+                    <div class="form-text">浏览器标识，建议使用默认值</div>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" name="enableNotify" id="enableNotify">
+                    <label class="form-check-label" for="enableNotify">启用通知</label>
+                    <div class="form-text">是否启用库存通知功能</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">通知间隔(分钟)</label>
+                    <input type="number" class="form-control" name="notifyInterval">
+                    <div class="form-text">防止频繁发送相同通知，0表示允许重复提醒</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">通知方式</label>
+                    <select class="form-select" name="notifyType" onchange="toggleNotifyConfig()">
+                        <option value="">请选择</option>
+                        <option value="dingtalk_bot">钉钉机器人</option>
+                        <option value="qy_wechat_bot">企业微信机器人</option>
+                        <option value="push_plus">pushplus</option>
+                        <option value="server_chan">Server酱</option>
+                        <option value="bark">Bark</option>
+                    </select>
+                </div>
+
+                <div id="dingtalk_bot" class="notify-config hidden">
+                    <div class="mb-3">
+                        <input type="text" class="form-control mb-2" name="dingtalkBotSender.token" placeholder="Token">
+                        <input type="text" class="form-control" name="dingtalkBotSender.secret" placeholder="Secret">
+                    </div>
+                </div>
+
+                <div id="qy_wechat_bot" class="notify-config hidden">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="qyWechatBotSender.key" placeholder="Key">
+                    </div>
+                </div>
+
+                <div id="push_plus" class="notify-config hidden">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="pushPlusSender.token" placeholder="Token">
+                    </div>
+                </div>
+
+                <div id="server_chan" class="notify-config hidden">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="serverChanSender.sendKey" placeholder="SendKey">
+                    </div>
+                </div>
+
+                <div id="bark" class="notify-config hidden">
+                    <div class="mb-3">
+                        <input type="text" class="form-control mb-2" name="barkSender.apiUrl" placeholder="Api URL">
+                        <input type="text" class="form-control" name="barkSender.deviceKey" placeholder="Device Key">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">保存配置</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+    function showToast(message, isSuccess = true) {
+        Toastify({
+            text: message,
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            style: {
+                background: isSuccess ? "#28a745" : "#dc3545"
+            }
+        }).showToast();
+    }
+
+    function toggleNotifyConfig() {
+        const notifyType = document.querySelector('select[name="notifyType"]').value;
+        document.querySelectorAll('.notify-config').forEach(div => div.classList.add('hidden'));
+        if (notifyType) {
+            document.getElementById(notifyType).classList.remove('hidden');
+        }
+    }
+
+    function addSku() {
+        const skuItem = document.createElement('div');
+        skuItem.className = 'sku-item mb-2 row';
+        skuItem.innerHTML = `
+            <div class="col">
+                <input type="text" class="form-control" name="skuId" placeholder="商品ID">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="skuName" placeholder="商品名称">
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">删除</button>
+            </div>
+        `;
+        document.getElementById('skuList').appendChild(skuItem);
+    }
+
+    document.getElementById('configForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const config = {
+            everyMinutes: parseInt(formData.get('everyMinutes')),
+            provinces: formData.get('provinces').split(',').map(p => p.trim()).filter(p => p),
+            addressCodes: formData.get('addressCodes').split(',').map(a => a.trim()).filter(a => a),
+            skuInfos: Array.from(document.querySelectorAll('.sku-item')).map(item => ({
+                id: item.querySelector('[name="skuId"]').value,
+                name: item.querySelector('[name="skuName"]').value
+            })).filter(sku => sku.id.trim() && sku.name.trim()),
+            delay: parseInt(formData.get('delay')),
+            ua: formData.get('ua'),
+            enableNotify: formData.get('enableNotify') === 'on',
+            notifyInterval: parseInt(formData.get('notifyInterval')),
+            notifyType: formData.get('notifyType')
+        };
+
+        switch (config.notifyType) {
+            case 'dingtalk_bot':
+                config.dingtalkBotSender = {
+                    token: formData.get('dingtalkBotSender.token'),
+                    secret: formData.get('dingtalkBotSender.secret')
+                };
+                break;
+            case 'qy_wechat_bot':
+                config.qyWechatBotSender = {
+                    key: formData.get('qyWechatBotSender.key')
+                };
+                break;
+            case 'push_plus':
+                config.pushPlusSender = {
+                    token: formData.get('pushPlusSender.token')
+                };
+                break;
+            case 'server_chan':
+                config.serverChanSender = {
+                    sendKey: formData.get('serverChanSender.sendKey')
+                };
+                break;
+            case 'bark':
+                config.barkSender = {
+                    apiUrl: formData.get('barkSender.apiUrl'),
+                    deviceKey: formData.get('barkSender.deviceKey')
+                };
+                break;
+        }
+
+        try {
+            const response = await fetch('/api/save-config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(config)
+            });
+
+            if (response.ok) {
+                showToast('配置保存成功！');
+            } else {
+                showToast('配置保存失败！', false);
+            }
+        } catch (error) {
+            showToast('保存出错：' + error.message, false);
+        }
+    });
+
+    function renderConfig(config) {
+        document.querySelector('[name="everyMinutes"]').value = config.everyMinutes;
+        document.querySelector('[name="provinces"]').value = config.provinces.join(',');
+        document.querySelector('[name="addressCodes"]').value = config.addressCodes.join(',');
+        document.querySelector('[name="delay"]').value = config.delay;
+        document.querySelector('[name="ua"]').value = config.ua;
+
+        const skuList = document.getElementById('skuList');
+        skuList.innerHTML = '';
+
+        config.skuInfos.forEach(sku => {
+            const skuItem = document.createElement('div');
+            skuItem.className = 'sku-item mb-2 row';
+            skuItem.innerHTML = `
+                <div class="col">
+                    <input type="text" class="form-control" name="skuId" placeholder="商品ID" value="${sku.id}">
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" name="skuName" placeholder="商品名称" value="${sku.name}">
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">删除</button>
+                </div>
+            `;
+            skuList.appendChild(skuItem);
+        });
+
+        const emptySkuItem = document.createElement('div');
+        emptySkuItem.className = 'sku-item mb-2 row';
+        emptySkuItem.innerHTML = `
+            <div class="col">
+                <input type="text" class="form-control" name="skuId" placeholder="商品ID">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="skuName" placeholder="商品名称">
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" onclick="addSku()">添加</button>
+            </div>
+        `;
+        skuList.appendChild(emptySkuItem);
+
+        document.querySelector('[name="enableNotify"]').checked = config.enableNotify;
+        document.querySelector('[name="notifyInterval"]').value = config.notifyInterval;
+        document.querySelector('[name="notifyType"]').value = config.notifyType;
+
+        toggleNotifyConfig();
+
+        switch (config.notifyType) {
+            case 'dingtalk_bot':
+                document.querySelector('[name="dingtalkBotSender.token"]').value = config.dingtalkBotSender?.token || '';
+                document.querySelector('[name="dingtalkBotSender.secret"]').value = config.dingtalkBotSender?.secret || '';
+                break;
+            case 'qy_wechat_bot':
+                document.querySelector('[name="qyWechatBotSender.key"]').value = config.qyWechatBotSender?.key || '';
+                break;
+            case 'push_plus':
+                document.querySelector('[name="pushPlusSender.token"]').value = config.pushPlusSender?.token || '';
+                break;
+            case 'server_chan':
+                document.querySelector('[name="serverChanSender.sendKey"]').value = config.serverChanSender?.sendKey || '';
+                break;
+            case 'bark':
+                document.querySelector('[name="barkSender.apiUrl"]').value = config.barkSender?.apiUrl || '';
+                document.querySelector('[name="barkSender.deviceKey"]').value = config.barkSender?.deviceKey || '';
+                break;
+        }
+    }
+
+    async function loadConfig() {
+        try {
+            const response = await fetch('/api/get-config');
+            if (!response.ok) {
+                throw new Error('获取配置失败');
+            }
+            const config = await response.json();
+            renderConfig(config);
+        } catch (error) {
+            showToast('加载配置失败：' + error.message, false);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadConfig);
+</script>
+</body>
+</html>

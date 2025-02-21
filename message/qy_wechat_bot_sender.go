@@ -10,7 +10,7 @@ var (
 
 // QyWechatBotSender 企业微信机器人配置
 type QyWechatBotSender struct {
-	Key string `yaml:"key"`
+	Key string `yaml:"key" json:"key"`
 }
 
 func (_ QyWechatBotSender) GetName() string {

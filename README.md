@@ -11,11 +11,13 @@
 + 支持企业微信机器人
 + 支持PushPlus
 + 支持Server酱
++ 支持Bark
++ 支持网页编辑配置
 
 ### 待实现
 
 - [x] java镜像太大，使用go重构
-- [ ] 实现更多通知方式
+- [x] 实现更多通知方式
 
 ### 使用方式
 
@@ -58,7 +60,7 @@ pushPlus: # PushPlus
 serverChan: # Server酱
   sendKey:
 bark: # bark
-  baseUrl:
+  apiUrl:
   deviceKey:
 ```
 
@@ -71,7 +73,7 @@ bark: # bark
 #### docker（二选一）
 
 ```bash
-docker run -d --name jd-stock -v ./config:/app/config zhuweitung/jd-stock:latest
+docker run -d --name jd-stock -p 8080:8080 -v ./config:/app/config zhuweitung/jd-stock:latest
 ```
 
 #### docker-compose（二选一）
@@ -90,6 +92,10 @@ wget -O docker-compose.yml https://fastly.jsdelivr.net/gh/zhuweitung/jd-stock@go
 ```bash
 docker-compose up -d
 ```
+
+#### 网页编辑
+
+访问`ip:8080`端口
 
 ### 侵删
 

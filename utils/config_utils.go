@@ -115,6 +115,9 @@ func GetSender() (message.Sender, error) {
 	} else if "server_chan" == configInstance.NotifyType {
 		sender = configInstance.ServerChanSender
 
+	} else if "bark" == configInstance.NotifyType {
+		sender = configInstance.BarkSender
+
 	} else {
 		return nil, fmt.Errorf("通知方式%s未实现", configInstance.NotifyType)
 	}

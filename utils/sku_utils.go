@@ -25,9 +25,14 @@ func QueryStock(customSkuInfos []models.CustomSkuInfo) {
 
 	provinceNames := config.Provinces
 	addressCodes := config.AddressCodes
-	areaCodeCombinations := GetRandomCodeCombination(provinceNames)
-	if addressCodes != nil {
-		areaCodeCombinations = append(addressCodes, areaCodeCombinations...)
+
+	var areaCodeCombinations []string
+	if addressCodes != nil && len(addressCodes) > 0 {
+		// 只查询用户在配置中显式指定的地区编码
+		areaCodeCombinations = addressCodes
+	} else {
+		// 如果未配置具体地区编码，则退化为随机抽取各省一条组合编码
+		areaCodeCombinations = GetRandomCodeCombination(provinceNames)
 	}
 	stockAreaNames := make(map[string][]string)
 
@@ -93,13 +98,18 @@ func QueryStock(customSkuInfos []models.CustomSkuInfo) {
 				}
 				stockStateName := skuInfo.StockStateName
 				isPurchase := skuInfo.IsPurchase
+				skuState := skuInfo.SkuState
+
 				purchaseStr := "可购买"
 				if !isPurchase {
 					purchaseStr = "不可购买"
 				}
-				log.Printf("[%s] %s %s：%s %s", skuId, customSkuInfo.Name, areaName, stockStateName, purchaseStr)
 
-				if stockStateName == "现货" && isPurchase {
+				// 记录更详细的调试信息，包含 skuState
+				log.Printf("[%s] %s %s：%s %s skuState=%d", skuId, customSkuInfo.Name, areaName, stockStateName, purchaseStr, skuState)
+
+				// 只有满足：现货 + 可购买 + skuState == 1（上架状态），才视为真正可下单
+				if stockStateName == "现货" && isPurchase && skuState == 1 {
 					stockAreaNames[skuId] = append(stockAreaNames[skuId], areaName)
 				}
 			}

@@ -121,8 +121,8 @@ func main() {
 
 	// 启动HTTP服务器
 	go func() {
-		log.Printf("HTTP服务器启动在 :8080 端口")
-		if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Printf("HTTP服务器启动在 :9090 端口")
+		if err := http.ListenAndServe(":9090", nil); err != nil {
 			log.Fatal("HTTP服务器启动失败:", err)
 		}
 	}()

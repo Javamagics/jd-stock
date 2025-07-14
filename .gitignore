@@ -40,5 +40,5 @@ build/
 .idea/
 log/
 
-config/config.yaml
+#config/config.yaml
 config/message_cache.json

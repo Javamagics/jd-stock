@@ -3,15 +3,16 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/zhuweitung/jd-stock/models"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
 	"io"
 	"log"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/zhuweitung/jd-stock/models"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 )
 
 var (
@@ -108,8 +109,7 @@ func QueryStock(customSkuInfos []models.CustomSkuInfo) {
 				// 记录更详细的调试信息，包含 skuState
 				log.Printf("[%s] %s %s：%s %s skuState=%d", skuId, customSkuInfo.Name, areaName, stockStateName, purchaseStr, skuState)
 
-				// 只有满足：现货 + 可购买 + skuState == 1（上架状态），才视为真正可下单
-				if stockStateName == "现货" && isPurchase && skuState == 1 {
+				if skuState == 1 {
 					stockAreaNames[skuId] = append(stockAreaNames[skuId], areaName)
 				}
 			}
@@ -127,10 +127,21 @@ func QueryStock(customSkuInfos []models.CustomSkuInfo) {
 		skuId := customSkuInfo.Id
 		areaNames := stockAreaNames[skuId]
 		intersection := getIntersection(provinceNames, areaNames)
-		if len(provinceNames) == 0 {
-			messages = append(messages, fmt.Sprintf("商品 [%s] %s 在 %s 地区有现货！\n", skuId, customSkuInfo.Name, strings.Join(areaNames, "、")))
-		} else if len(intersection) > 0 {
-			messages = append(messages, fmt.Sprintf("商品 [%s] %s 在 %s 地区有现货！\n", skuId, customSkuInfo.Name, strings.Join(intersection, "、")))
+		var line string
+		if len(areaNames) > 0 {
+			showNames := areaNames
+			if len(intersection) > 0 {
+				// 如果在重点省份中，就只显示重点省份
+				showNames = intersection
+			}
+			line = fmt.Sprintf("商品 [%s] %s 在 %s 地区有现货！", skuId, customSkuInfo.Name, strings.Join(showNames, "、"))
+		}
+		if line != "" {
+			if customSkuInfo.Link != "" {
+				// Server酱支持 Markdown，追加购买链接
+				line = fmt.Sprintf("%s [立即购买](%s)", line, customSkuInfo.Link)
+			}
+			messages = append(messages, line+"\n")
 		}
 	}
 	if len(messages) > 0 {

@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+
 	"github.com/zhuweitung/jd-stock/message"
 )
 
@@ -65,6 +66,7 @@ type Config struct {
 type CustomSkuInfo struct {
 	Id   string `yaml:"id" json:"id"`     // 商品id（用于查询库存）
 	Name string `yaml:"name" json:"name"` // 商品名称（用于提示）
+	Link string `yaml:"link" json:"link"` // 商品跳转链接（用于通知）
 }
 
 // MessageCache 通知缓存

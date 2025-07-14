@@ -2,13 +2,14 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/zhuweitung/jd-stock/message"
-	"github.com/zhuweitung/jd-stock/models"
-	"github.com/zhuweitung/jd-stock/utils"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/zhuweitung/jd-stock/message"
+	"github.com/zhuweitung/jd-stock/models"
+	"github.com/zhuweitung/jd-stock/utils"
 
 	"github.com/go-co-op/gocron"
 )
@@ -103,6 +104,9 @@ func main() {
 	}
 	log.Printf("|| 当前版本：v1.0.5\n")
 	log.Println("================================")
+
+	// 启动时发送测试通知，验证消息渠道是否正常
+	utils.SendMessage("【测试】京东库存监控服务启动成功")
 
 	// 加载地区编码
 	err = utils.LoadAreaCodes()

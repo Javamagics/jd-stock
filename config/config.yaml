@@ -1,0 +1,90 @@
+everyMinutes: 1 # 每隔N分钟执行
+provinces: # 库存省份，省份有货后通知
+  - 江苏
+  - 浙江
+  - 上海
+addressCodes: # 库存地区编码，在 https://cll.name/jd/jdloc.html 中查询完整的地区编码
+  - 6_325_0_0
+  - 1_2809_0_0
+skuInfos: # 监控商品信息
+  - id: 100154886849
+    name: 白边拍立得相纸-72元20张
+    link: https://u.jd.com/3aPpYfE
+  - id: 366712
+    name: 彩虹单包10张-39元
+    link: https://u.jd.com/3GPpYA4
+  - id: 100022137128
+    name: 经典胶卷10张-55元
+    link: https://u.jd.com/3rPpgQ5
+  - id: 3792333
+    name: mini相纸彩色铅笔彩绘-55元
+    link: https://u.jd.com/3aPpWRK
+  - id: 867915
+    name: 糖果波点10张-55元
+    link: https://u.jd.com/3GPp1Nk
+  - id: 100006513878
+    name: 花语单包10张-55元
+    link: https://u.jd.com/36PpDpy
+  - id: 100028995057
+    name: 涂鸦10张-55元
+    link: https://u.jd.com/3rPpYpu
+  - id: 100013404634
+    name: 粉色沁柠10张-55元
+    link: https://u.jd.com/3aPppDR
+  - id: 4086790
+    name: 天空蓝10张-55元
+    link: https://u.jd.com/36PpyL2
+  - id: 6227471
+    name: 黑边单包1-55元
+    link: https://u.jd.com/31PpY3a
+  - id: 100071831139
+    name: 薰衣草紫相纸10张-55元
+    link: https://u.jd.com/31PpDSJ
+  - id: 100001685833
+    name: 锦绣相纸10张-55元
+    link: https://u.jd.com/3gPpgVa
+  - id: 100010336096
+    name: 人鱼尾巴10张-55元
+    link: https://u.jd.com/3rPplK9
+  - id: 100011829628
+    name: 天青石10张-55元
+    link: https://u.jd.com/36Ppgbk
+  - id: 100011872556
+    name: 懒蛋蛋10张-55元
+    link: https://u.jd.com/3aPplpT
+  - id: 100030058830
+    name: 石灰岩10张-55元
+    link: https://u.jd.com/3DPpBJy
+  - id: 100148882640
+    name: 马卡龙10张-55元
+    link: https://u.jd.com/3gPp1xT
+  - id: 1088921
+    name: 可爱双子星10张-55元
+    link: https://u.jd.com/36Ppy0r
+
+# 测试
+#  - id: 100120925553
+#    name: ps5（测试请忽略）
+#    link: https://3.cn/2l-akyO3
+#  - id: 10070391854544
+#    name: ps5手柄（测试请忽略）
+#    link: https://3.cn/2l-akNUn
+delay: 10000 # 每次查询延迟（毫秒），建议设置大些，防止触发风控
+ua: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0
+enableNotify: true # 启用通知
+notifyInterval: 0 # 通知间隔（分钟），防止频繁发送相同通知，0表示允许重复提醒
+notifyType: "server_chan" # 通知方式（dingtalk_bot、qy_wechat_bot、push_plus、server_chan、bark）
+dingtalkBot: # 钉钉机器人
+  token:
+  secret:
+qyWechatBot: # 企业微信机器人
+  key:
+pushPlus: # PushPlus
+  token:
+serverChan: # Server酱
+  sendKey:
+    - SCT289684TqD1tOOECY1pGiYU2Tpqc3rlh
+    - SCT289688TJXIJpltmtoVxmt5VM3cJ99gl
+bark:
+  apiUrl:
+  deviceKey:
